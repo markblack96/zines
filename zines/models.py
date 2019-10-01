@@ -7,5 +7,5 @@ class Post(db.Model):
     post_id = db.Column(db.Integer, unique=True, primary_key=True)
 
     def __repr__(self):
-        return '<Post %r>' % self.post_id
+        return f'<Post; title: {self.title}, id: {self.post_id}>'
 

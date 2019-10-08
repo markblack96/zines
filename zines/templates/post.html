@@ -2,16 +2,19 @@
 <html>
 	<head>
 		<title>{{ post.title }}</title>
-        <link rel="stylesheet" href={{ url_for('static', filename='main.css') }}>
 	</head>
 	<body>
-		<article class="article">
-		    <div class="content">
-            <div class="header">
-			<h3>{{ post.title }}</h3>
+		<div class="article">
+        <div id="toc">
+        {{ post.title }}
+        </div>
+        <div class="content">
+            <div class="stippled title">
+			    <h3>{{ post.title }}</h3>
             </div>
-                {{ post.content | safe }}
-            </div>
-		</article>
+            {{ post.content | safe }}
+        </div>
+		</div>
+        <link rel="stylesheet" href={{ url_for('static', filename='main.css') }}>
 	</body>
 </html>

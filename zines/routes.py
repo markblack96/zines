@@ -1,4 +1,4 @@
-from flask import render_template 
+from flask import render_template, request
 from . import app
 from . import models
 from .forms import CreatePost
@@ -11,7 +11,9 @@ def index(post_id=None):
     #        'content': content}
     return render_template('post.html', post=post)
 
-@app.route('/write')
+@app.route('/write', methods=["GET", "POST"])
 def write():
     form = CreatePost()
+    if request.method == "POST":
+        print(request.form.get('delta'))
     return render_template('write.html', form=form)

@@ -1,0 +1,9 @@
+* {
+    margin: 0 auto; 
+}
+#writer {
+    width: 67%;
+}
+#editor-container {
+    height: 90%;
+}

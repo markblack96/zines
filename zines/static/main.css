@@ -1,6 +1,5 @@
 * {
 	margin: 0;
-    font-family: Charcoal, Chicago, monospace;
 }
 .stippled {
     background-color:#f0f0f0;
@@ -17,6 +16,7 @@
 .title h3 {
     line-height: 50px;
     text-align: center;
+    font-family: Charcoal, Chicago, monospace;
 }
 .article {
     display: inline-grid;

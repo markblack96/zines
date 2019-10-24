@@ -9,8 +9,9 @@ from bs4 import BeautifulSoup
 @app.route('/')
 @app.route('/index')
 def index():
+    blog_title = app.config['TITLE']
     posts = models.Post.query.all()
-    return render_template("index.html", posts=posts)
+    return render_template("index.html", posts=posts, blog_title=blog_title)
 @app.route('/post/')
 @app.route('/post/<post_id>')
 def post(post_id=None):

@@ -24,7 +24,7 @@
 
     var submit_entry = function () {
         var hidden_text_field = document.getElementById('delta');
-        hidden_text_field.value = JSON.stringify(quill.getContents());
+        hidden_text_field.value = document.getElementById('editor-container').innerHTML;
     }
     var new_post_form = document.getElementsByClassName('form')[0];
     new_post_form.onsubmit = submit_entry;

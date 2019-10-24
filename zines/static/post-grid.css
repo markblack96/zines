@@ -1,0 +1,16 @@
+/*
+ * Grid for posts
+ */
+
+article {
+    display: grid;
+    grid-template-columns: 66% auto 33%;
+    grid-template-rows: 0;
+}
+ 
+section {
+    grid-column-start: 1;
+    grid-column-end: span 1;
+    text-align: justify;                                                                                                                                                                                
+}
+

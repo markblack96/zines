@@ -8,7 +8,7 @@
     background-size: 3px 3px;
 }
 .title {
-    height: 50px;
+    height: auto;
     position: sticky;
     position: -webkit-sticky;
     top: 0px;

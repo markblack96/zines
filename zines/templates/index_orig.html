@@ -1,11 +1,16 @@
-{% extends 'base.html' %}
+<!doctype html>
+<html>
+<head>
 
-{% block index %}
-<div class="index">
+</head>
+
+<body>
+    <div class="index">
     <ul>
     {% for post in posts %}
         <li><a href="/post/{{ post.post_id }}">{{ post.title }}</a></li>
     {% endfor %}
     </ul>
-</div>
-{% endblock %}
+    </div>
+</body>
+</html>

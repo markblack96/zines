@@ -1,0 +1,19 @@
+/*
+    CSS for blog
+*/
+
+* {
+    margin: 0 auto; /* center */
+}
+/*
+ * CSS rules for table of contents
+ */
+#toc {
+    grid-column-start: 3;
+    grid-column-end: span 1;
+
+}
+
+#toc span {
+    font-weight: bold;
+}

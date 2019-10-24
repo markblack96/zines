@@ -23,6 +23,7 @@ def post(post_id=None):
 
 @app.route('/write', methods=["GET", "POST"])
 def write():
+    # todo: make first h1 the title, make all other h1s into h2s
     form = CreatePost()
     if request.method == "POST":
         cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3'],

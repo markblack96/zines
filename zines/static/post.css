@@ -5,15 +5,30 @@
 * {
     margin: 0 auto; /* center */
 }
+h1 {
+    font-size: 1.66rem;
+}   
+h2 {
+    font-size: 1.33rem;
+}
+h3 {
+    font-size: 1.11rem;
+}
+section p {
+    padding: 0.1em 0.5em;
+}
+section h2 { /* section headers */
+   text-align: center; 
+}
+#title {
+    padding: 1.5em;
+}
 /*
  * CSS rules for table of contents
  */
 #toc {
-    grid-column-start: 3;
-    grid-column-end: span 1;
-
+    padding: 0 0.5em;
 }
-
 #toc span {
     font-weight: bold;
 }

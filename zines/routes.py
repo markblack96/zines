@@ -1,7 +1,8 @@
-from flask import render_template, request
+from flask import render_template, request, redirect, flash, url_for
+from flask_login import login_required, current_user, login_user, logout_user
 from . import app, db
 from . import models
-from .forms import CreatePost
+from .forms import CreatePost, LoginForm
 from lxml.html.clean import Cleaner
 from bs4 import BeautifulSoup
 
@@ -23,6 +24,7 @@ def post(post_id=None):
     return render_template('post.html', post=post, sections=sections)
 
 @app.route('/write', methods=["GET", "POST"])
+@login_required
 def write():
     # todo: make first h1 the title, make all other h1s into h2s
     form = CreatePost()
@@ -41,3 +43,25 @@ def write():
         db.session.commit()
         print(f"Title: {title}" )
     return render_template('write.html', form=form)
+
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = LoginForm()
+    if form.validate_on_submit(): # POST
+        user = models.User.query.filter_by(username=form.username.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid username or password') # base.html has no way to intercept these so flashes don't show on login page
+            return redirect(url_for('login'))
+        login_user(user)
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('index')
+        return redirect(next_page)
+    return render_template('login.html', title='Sign In', form=form)
+
+@app.route('/logout', methods=["GET", "POST"])
+def logout():
+    logout_user()
+    return redirect(url_for('index'))

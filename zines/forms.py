@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, HiddenField, IntegerField
-from wtforms.validators import Length, NumberRange
+from wtforms import SubmitField, HiddenField, IntegerField, StringField, PasswordField
+from wtforms.validators import Length, NumberRange, DataRequired, ValidationError
 from wtforms.widgets import HiddenInput
 
 
@@ -19,3 +19,9 @@ class CreatePost(FlaskForm):
     )
 
     submit = SubmitField('Create Post')
+
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Sign In')

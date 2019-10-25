@@ -8,6 +8,9 @@
 <body>
     <nav>
         <a href="#">Home</a>
+        {% if not current_user.is_anonymous %}
+        <a href="/logout">Logout</a>
+        {% endif %}
     </nav>
     <div class="header">
         <h1>{{ blog_title }}</h1> 

@@ -6,10 +6,20 @@
     max-width: 66%;
     background-color: #ffffff;
 }
+div.index p {
+    padding: 1em;
+}
+div.index li {
+    padding: 0.333em;
+}
 body {
     background-color: #f0f0f0;
 }
 .header {
     max-width: 66%;
 }
-
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}

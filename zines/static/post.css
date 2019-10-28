@@ -7,15 +7,17 @@
 }
 h1 {
     font-size: 1.66rem;
+    text-align: center;
 }   
 h2 {
     font-size: 1.33rem;
+    margin: 1em;
 }
 h3 {
     font-size: 1.11rem;
 }
 section p {
-    padding: 0.1em 0.5em;
+    padding: 0.111em 0.666em;
 }
 section h2 { /* section headers */
    text-align: center; 

@@ -2,9 +2,10 @@
  * Grid for posts
  */
 
+
 article {
     display: grid;
-    grid-template-columns: 66% auto 33%;
+    grid-template-columns: 66% 34%;
     grid-template-rows: 2;
 }
  
@@ -16,12 +17,35 @@ section {
 }
 #title {
     grid-column-start: 1;
-    grid-column-end: 4;
+    grid-column-end: 3;
     grid-row: 1;
 }
 #toc {
     grid-column-start: 2;
-    grid-column-end: span 2;
+    grid-column-end: span 1;
     grid-row: 2;
 }
+@media only screen and (max-width: 768px) {
+    /* Phones */
+    article {
+        display: grid;
+        grid-template-columns: 100%;
+        grid-template-rows: 3;
+    }
+    section {
+        grid-column-start: 1;
+        grid-column-end: span 1;
+        grid-row: 3;
+    }
+    #title {
+        grid-column-start: 1;
+        grid-column-end: span 1;
+        grid-row: 1;
+    }
+    #toc {
+        grid-column-start: 1;
+        grid-column-end: span 1;
+        grid-row: 2;
+    }
 
+}

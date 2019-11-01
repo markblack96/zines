@@ -1,0 +1,13 @@
+<!-- Admin page -->
+{% extends 'base.html' %}
+{% block index %}
+<table>
+    {% for post in posts %}
+    <tr>
+        <td>{{ post.title }}</td>
+        <td><a href="/write">Edit</a></td>
+        <td><a>Delete</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

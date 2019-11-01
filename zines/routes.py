@@ -65,3 +65,8 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/admin', methods=["GET", "POST"])
+def admin():
+    posts = models.Post.query.all()
+    return render_template('admin.html', posts=posts)

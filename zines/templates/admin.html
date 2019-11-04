@@ -1,5 +1,17 @@
 <!-- Admin page -->
 {% extends 'base.html' %}
+{% block messages %}
+<!-- displays flashed messages -->
+<div id="messages">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <span style="color: red; font-style: italic">{{ message }}</span>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}
 {% block index %}
 <table>
     <th colspan="100%">Posts</th>
@@ -7,7 +19,7 @@
     <tr>
         <td>{{ post.title }}</td>
         <td><a href="/write/{{ post.post_id }}">Edit</a></td>
-        <td><a>Delete</a></td>
+        <td><form method="post" action="/delete/{{ post.post_id }}"><button>Delete</button></form></td>
     </tr>
     {% endfor %}
 </table>

@@ -29,6 +29,7 @@ def write(post_id=None):
     # todo: make title a separate field 
     form = CreatePost()
     post = None # start blank, bit of a hacky solution though
+    
     if post_id:
         post = models.Post.query.filter_by(post_id=post_id).first()
     if request.method == "POST": # new post
@@ -46,6 +47,7 @@ def write(post_id=None):
         else:
             post = models.Post.query.filter_by(post_id=post_id).update(dict(title=submission.title, content=submission.content))
         db.session.commit()
+        return redirect(url_for('index'))
     return render_template('write.html', form=form, post=post)
 
 @app.route('/login', methods=["GET", "POST"])
@@ -69,6 +71,14 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/delete/<post_id>', methods=["POST"])
+def delete(post_id):
+    # verify user is logged in and associated with post
+    models.Post.query.filter_by(post_id=post_id).delete()
+    db.session.commit()
+    flash(f'Post {post_id} deleted')
+    return redirect(url_for('admin'))
 
 @app.route('/admin', methods=["GET", "POST"])
 def admin():

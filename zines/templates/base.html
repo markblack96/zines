@@ -10,12 +10,14 @@
         <a href="/">Home</a>
         {% if not current_user.is_anonymous %}
         <a href="/write">Write</a>
+        <a href="/admin">Admin</a>
         <a href="/logout">Logout</a>
         {% endif %}
     </nav>
     <div class="header">
         <h1>{{ blog_title }}</h1> 
     </div>
+    {% block messages %}{% endblock %}
     <section id="index">
         {% block index %}{% endblock %}
     </section>

@@ -6,7 +6,8 @@
 <body>
 <div id="writer">
 <div id="editor-container">
-
+    <h1>{{ post.title }}</h1>
+    {{ post.content | safe }}
 </div>
 <!-- button id="submit" type="submit">
     Submit

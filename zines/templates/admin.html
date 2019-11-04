@@ -2,10 +2,11 @@
 {% extends 'base.html' %}
 {% block index %}
 <table>
+    <th colspan="100%">Posts</th>
     {% for post in posts %}
     <tr>
         <td>{{ post.title }}</td>
-        <td><a href="/write">Edit</a></td>
+        <td><a href="/write/{{ post.post_id }}">Edit</a></td>
         <td><a>Delete</a></td>
     </tr>
     {% endfor %}

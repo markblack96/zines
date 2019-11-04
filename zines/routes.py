@@ -20,15 +20,18 @@ def post(post_id=None):
     soup = BeautifulSoup(post.content, 'html.parser')
     sections = soup.find_all(['h1', 'h2', 'h3'])
     sections = [section.get_text() for section in sections]
-    print(sections)
     return render_template('post.html', post=post, sections=sections)
 
+@app.route('/write/<post_id>', methods=["GET", "POST"])
 @app.route('/write', methods=["GET", "POST"])
 @login_required
-def write():
-    # todo: make first h1 the title, make all other h1s into h2s
+def write(post_id=None):
+    # todo: make title a separate field 
     form = CreatePost()
-    if request.method == "POST":
+    post = None # start blank, bit of a hacky solution though
+    if post_id:
+        post = models.Post.query.filter_by(post_id=post_id).first()
+    if request.method == "POST": # new post
         cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3'],
                           remove_unknown_tags=False)
         post = cleaner.clean_html(request.form.get('delta'))
@@ -36,13 +39,14 @@ def write():
         title = soup.find_all('h1')[0].string # todo: check if exists first
         for h1 in soup("h1"): # remove all h1 tags
             h1.decompose()
-
         post=soup.prettify()
         submission = models.Post(title=title, author="meb", content=post)
-        db.session.add(submission)
+        if post_id == None:
+            db.session.add(submission)
+        else:
+            post = models.Post.query.filter_by(post_id=post_id).update(dict(title=submission.title, content=submission.content))
         db.session.commit()
-        print(f"Title: {title}" )
-    return render_template('write.html', form=form)
+    return render_template('write.html', form=form, post=post)
 
 @app.route('/login', methods=["GET", "POST"])
 def login():

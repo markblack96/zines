@@ -2,6 +2,7 @@
 {% block title %}{{ post.title }}{% endblock %}
 {% block content %}
 <article>
+<div class="container">
 <div id="toc">
 <span>{{ post.title }}</span>
 <ul>
@@ -11,6 +12,7 @@
 </li>
 {% endfor %}
 </ul>
+</div>
 </div>
 <h1 id="title">{{ post.title }}</h1>
 <section class="body">

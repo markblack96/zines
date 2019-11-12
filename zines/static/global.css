@@ -1,6 +1,6 @@
 * {
 	margin: 0 auto;
-    font-family: sans-serif;
+    font-family: Times New Roman, serif;
 }
 .index {
     max-width: 66%;
@@ -22,4 +22,13 @@ ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
+}
+nav {
+    max-width: 66%;
+}
+nav a {
+    color: #0f0f0f;
+}
+nav a:visited {
+    color: #0f0f0f;
 }

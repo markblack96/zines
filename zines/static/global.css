@@ -32,3 +32,7 @@ nav a {
 nav a:visited {
     color: #0f0f0f;
 }
+.post-preview-title {
+    padding-top: 0.33em;
+    padding-left: 0.33em;
+}

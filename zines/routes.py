@@ -12,7 +12,9 @@ from bs4 import BeautifulSoup
 def index():
     blog_title = app.config['TITLE']
     posts = models.Post.query.all()
-    return render_template("index.html", posts=posts, blog_title=blog_title)
+    previews = {post.post_id:BeautifulSoup(post.content).p.text for post in posts}
+    #{post.post_id:BeautifulSoup(post.content).get_text(" ", strip=True)[:500] + "..." for post in posts}
+    return render_template("index.html", posts=posts, blog_title=blog_title, previews=previews)
 @app.route('/post/')
 @app.route('/post/<post_id>')
 def post(post_id=None):

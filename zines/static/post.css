@@ -48,4 +48,8 @@ section h2 { /* section headers */
     font-style: italic;
     font-weight: bold;
 }
-
+blockquote {
+    font-style: italic;
+    padding-left: 1.333em;
+    padding-right: 0.666em;
+}

@@ -2,7 +2,7 @@
 	margin: 0 auto;
     font-family: Times New Roman, serif;
 }
-.index {
+.index, .blog-details {
     max-width: 66%;
     background-color: #ffffff;
 }

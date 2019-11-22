@@ -35,7 +35,7 @@ def write(post_id=None):
     if post_id:
         post = models.Post.query.filter_by(post_id=post_id).first()
     if request.method == "POST": # new post
-        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3'],
+        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote'],
                           remove_unknown_tags=False)
         post = cleaner.clean_html(request.form.get('delta'))
         soup = BeautifulSoup(post, 'html.parser')

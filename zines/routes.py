@@ -83,6 +83,7 @@ def delete(post_id):
     return redirect(url_for('admin'))
 
 @app.route('/admin', methods=["GET", "POST"])
+@login_required
 def admin():
     posts = models.Post.query.all()
     return render_template('admin.html', posts=posts)

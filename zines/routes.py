@@ -84,6 +84,7 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route('/delete/<post_id>', methods=["POST"])
+@login_required
 def delete(post_id):
     # verify user is logged in and associated with post
     models.Post.query.filter_by(post_id=post_id).delete()

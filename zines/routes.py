@@ -15,14 +15,20 @@ def index():
     previews = {post.post_id:BeautifulSoup(post.content).p.text for post in posts}
     #{post.post_id:BeautifulSoup(post.content).get_text(" ", strip=True)[:500] + "..." for post in posts}
     return render_template("index.html", posts=posts, blog_title=blog_title, previews=previews)
+
 @app.route('/post/')
 @app.route('/post/<post_id>')
 def post(post_id=None):
     post = models.Post.query.filter_by(post_id=post_id).first()
     soup = BeautifulSoup(post.content, 'html.parser')
+    # assign section ids
     sections = soup.find_all(['h1', 'h2', 'h3'])
+    for i, tag in enumerate([tag for tag in soup.find_all(['h2', 'h3'])]):
+        tag['id'] = i+1 # hacky shit
+        soup.find(['h2', 'h3'], text=tag.text).replace_with(tag)
+    post_view = models.Post(content=soup.div, author=post.author, title=post.title)
     sections = [section.get_text() for section in sections]
-    return render_template('post.html', post=post, sections=sections)
+    return render_template('post.html', post=post_view, sections=sections)
 
 @app.route('/write/<post_id>', methods=["GET", "POST"])
 @app.route('/write', methods=["GET", "POST"])
@@ -35,7 +41,7 @@ def write(post_id=None):
     if post_id:
         post = models.Post.query.filter_by(post_id=post_id).first()
     if request.method == "POST": # new post
-        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote'],
+        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li'],
                           remove_unknown_tags=False)
         post = cleaner.clean_html(request.form.get('delta'))
         soup = BeautifulSoup(post, 'html.parser')
@@ -75,6 +81,7 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route('/delete/<post_id>', methods=["POST"])
+@login_required
 def delete(post_id):
     # verify user is logged in and associated with post
     models.Post.query.filter_by(post_id=post_id).delete()

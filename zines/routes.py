@@ -15,6 +15,7 @@ def index():
     previews = {post.post_id:BeautifulSoup(post.content).p.text for post in posts}
     #{post.post_id:BeautifulSoup(post.content).get_text(" ", strip=True)[:500] + "..." for post in posts}
     return render_template("index.html", posts=posts, blog_title=blog_title, previews=previews)
+
 @app.route('/post/')
 @app.route('/post/<post_id>')
 def post(post_id=None):
@@ -22,13 +23,9 @@ def post(post_id=None):
     soup = BeautifulSoup(post.content, 'html.parser')
     # assign section ids
     sections = soup.find_all(['h1', 'h2', 'h3'])
-    #for i in range(len(sections)):
-    #    sections[i]['id'] = i
-    #print(sections)
     for i, tag in enumerate([tag for tag in soup.find_all(['h2', 'h3'])]):
         tag['id'] = i+1 # hacky shit
         soup.find(['h2', 'h3'], text=tag.text).replace_with(tag)
-    # post.content = soup.div
     post_view = models.Post(content=soup.div, author=post.author, title=post.title)
     sections = [section.get_text() for section in sections]
     return render_template('post.html', post=post_view, sections=sections)

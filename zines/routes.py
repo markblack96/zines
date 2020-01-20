@@ -55,6 +55,7 @@ def write(post_id=None):
         else:
             post = models.Post.query.filter_by(post_id=post_id).update(dict(title=submission.title, content=submission.content))
         db.session.commit()
+        print(request.user)
         return redirect(url_for('index'))
     return render_template('write.html', form=form, post=post)
 

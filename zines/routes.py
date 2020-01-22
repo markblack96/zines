@@ -49,13 +49,12 @@ def write(post_id=None):
         for h1 in soup("h1"): # remove all h1 tags
             h1.decompose()
         post=soup.prettify()
-        submission = models.Post(title=title, author="meb", content=post)
+        submission = models.Post(title=title, author=current_user.username, content=post)
         if post_id == None:
             db.session.add(submission)
         else:
             post = models.Post.query.filter_by(post_id=post_id).update(dict(title=submission.title, content=submission.content))
         db.session.commit()
-        print(request.user)
         return redirect(url_for('index'))
     return render_template('write.html', form=form, post=post)
 

@@ -23,6 +23,9 @@ ul {
   margin: 0;
   padding: 0;
 }
+a {
+    color: #0f0f0f;
+}
 nav {
     max-width: 66%;
 }

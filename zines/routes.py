@@ -11,10 +11,11 @@ from bs4 import BeautifulSoup
 @app.route('/index')
 def index():
     blog_title = app.config['TITLE']
+    blog_description = app.config['DESCRIPTION']
     posts = models.Post.query.all()
     previews = {post.post_id:BeautifulSoup(post.content).p.text for post in posts}
     #{post.post_id:BeautifulSoup(post.content).get_text(" ", strip=True)[:500] + "..." for post in posts}
-    return render_template("index.html", posts=posts, blog_title=blog_title, previews=previews)
+    return render_template("index.html", posts=posts, blog_title=blog_title, blog_description=blog_description, previews=previews)
 
 @app.route('/post/')
 @app.route('/post/<post_id>')
@@ -49,7 +50,7 @@ def write(post_id=None):
         for h1 in soup("h1"): # remove all h1 tags
             h1.decompose()
         post=soup.prettify()
-        submission = models.Post(title=title, author="meb", content=post)
+        submission = models.Post(title=title, author=current_user.username, content=post)
         if post_id == None:
             db.session.add(submission)
         else:

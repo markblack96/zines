@@ -27,6 +27,7 @@ section h2 { /* section headers */
 }
 #title {
     padding: 1.5em;
+    font-style: italic;
 }
 /*
  * CSS rules for table of contents
@@ -42,7 +43,7 @@ section h2 { /* section headers */
     border-width: thin;
     text-align: center;
     position: sticky;
-    top: 0;
+    top: 1em;
 }
 #toc span {
     font-style: italic;

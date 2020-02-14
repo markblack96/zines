@@ -3,6 +3,7 @@
 {% block content %}
 <article>
 <div class="container">
+{% if sections is defined and sections[0] is defined %}
 <div id="toc">
 <span>{{ post.title }}</span>
 <ul>
@@ -14,6 +15,7 @@
 </ul>
 </div>
 </div>
+{% endif %}
 <h1 id="title">{{ post.title }}</h1>
 <section class="body">
 {{ post.content | safe }}

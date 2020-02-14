@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
-
+{%block title%}{{ blog_title }}{%endblock%}
 {% block index %}
 <div class="blog-details">
-    <p>Communism, anarchy, and local problems</p>
+    <p>{{ blog_description }}</p>
 </div>
 <div class="index">
     {% if posts %}

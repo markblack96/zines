@@ -19,6 +19,7 @@
     <tr>
         <td>{{ post.title }}</td>
         <td><a href="/write/{{ post.post_id }}">Edit</a></td>
+        <td><a href="/edit/image/{{ post.post_id }}">Edit Image</a></td>
         <td><form method="post" action="/delete/{{ post.post_id }}"><button>Delete</button></form></td>
     </tr>
     {% endfor %}

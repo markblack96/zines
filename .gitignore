@@ -107,3 +107,4 @@ venv.bak/
 config.py
 *.swp
 *.txt
+zines/static/images/*

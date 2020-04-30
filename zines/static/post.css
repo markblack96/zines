@@ -54,3 +54,10 @@ blockquote {
     padding-left: 1.333em;
     padding-right: 0.666em;
 }
+.main-image {
+    
+}
+.main-image img {
+    width: 100%;
+    height: auto;
+}

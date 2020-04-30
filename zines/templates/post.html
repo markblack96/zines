@@ -3,6 +3,7 @@
 {% block content %}
 <article>
 <div class="container">
+
 {% if sections is defined and sections[0] is defined %}
 <div id="toc">
 <span>{{ post.title }}</span>
@@ -16,12 +17,12 @@
 </div>
 </div>
 {% endif %}
+<h1 id="title">{{ post.title }}</h1>
 {% if post.images[0] is defined %}
 <div class="main-image">
-    <img src="{{ url_for('static', filename='images/'+post.images[0].url) }}" width="100%" height="auto">
+    <img src="{{ url_for('static', filename='images/'+post.images[0].url) }}">
 </div>
 {% endif %}
-<h1 id="title">{{ post.title }}</h1>
 <section class="body">
 {{ post.content | safe }}
 </section>

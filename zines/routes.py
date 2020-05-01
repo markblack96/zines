@@ -107,6 +107,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 @app.route('/upload/image', methods=['GET', 'POST'])
+@login_required
 def upload_file():
     print(request)
     if request.method == 'POST':
@@ -141,6 +142,7 @@ def uploaded_file(filename):
                                filename)
 
 @app.route('/edit/image/<post_id>', methods=['GET', 'POST'])
+@login_required
 def edit_image(post_id):
     if request.method == 'POST':
         if 'file' not in request.files:

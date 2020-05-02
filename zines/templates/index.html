@@ -1,9 +1,6 @@
 {% extends 'base.html' %}
 {%block title%}{{ blog_title }}{%endblock%}
 {% block index %}
-<div class="blog-details">
-    <p>{{ blog_description }}</p>
-</div>
 <div class="index">
     {% if posts %}
     {% for post in posts %}

@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">
 </head>
 <body>
+    <div class="header">
+        <span class="logo"></span>
+        <h1>{{ blog_title }}</h1> 
+        <p>{{ blog_description }}</p>
+    </div>
     <nav>
         <a href="/">Home</a>
         {% if not current_user.is_anonymous %}
@@ -15,9 +20,6 @@
         <a href="/logout">Logout</a>
         {% endif %}
     </nav>
-    <div class="header">
-        <h1>{{ blog_title }}</h1> 
-    </div>
     {% block messages %}{% endblock %}
     <section id="index">
         {% block index %}{% endblock %}

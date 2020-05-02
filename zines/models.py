@@ -12,7 +12,7 @@ class Post(db.Model):
     content = db.Column(db.UnicodeText)
     date = db.Column(db.DateTime, default=datetime.utcnow)
     post_id = db.Column(db.Integer, unique=True, primary_key=True)
-
+    images = db.relationship('Image', backref='post', lazy=True)
     def __repr__(self):
         return f'<Post; title: {self.title}, id: {self.post_id}>'
 
@@ -52,3 +52,7 @@ class User(UserMixin, db.Model):
         return User.query.get(user_id)
 
     
+class Image(db.Model):
+    id = db.Column(db.Integer, unique=True, primary_key=True)
+    url = db.Column(db.String(128), unique=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'))

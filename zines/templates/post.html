@@ -1,18 +1,21 @@
 {% extends 'base.html' %}
-{% block title %}{{ post.title }}{% endblock %}
-{% block index %}
-<div id="article" class="flex">
-    <div id="post" class="flex column">
-        <h1 id="title">{{ post.title }}</h1>
-        {% if post.images[0] is defined %}
-        <div class="main-image">
-            <img src="{{ url_for('static', filename='images/'+post.images[0].url) }}">
-        </div>
+{% block title %}
+{{ post.title }}
+{% endblock %}
+<link rel="stylesheet" src="{{ url_for('static', filename='post.css')}}">
+{% block messages %}
+<div id="messages">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <span style="color: red; font-style: italic">{{ message }}</span>
+            {% endfor %}
         {% endif %}
-        <div class="body">
-        {{ post.content | safe }}
-        </div>
-    </div>
+    {% endwith %}
+</div>
+{% endblock %}
+{% block index %}
+<div id="post" class="flex column">
     {% if sections is defined and sections[0] is defined %}
     <div id="toc">
         <span>{{ post.title }}</span>
@@ -25,5 +28,16 @@
         </ul>
     </div>
     {% endif %}
+    <div id="title-and-image">
+        <h1 id="title">{{ post.title }}</h1>
+        {% if post.images[0] is defined %}
+        <div class="main-image">
+            <img src="{{ url_for('static', filename='images/'+post.images[0].url) }}">
+        </div>
+        {% endif %}
+    </div>
+    <div class="body">
+        {{ post.content | safe }}
+    </div>
 </div>
 {% endblock %}

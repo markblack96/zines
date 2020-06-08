@@ -67,17 +67,16 @@ nav a:visited {
 }
 /* table of contents */
 #toc {
-    padding-left: 1em;
-    padding-right: 1em;
-    padding-bottom: 1em;
-    margin: 1em;
+    padding: 1em;
     margin-top: 0;
-    border-style: dashed;
-    max-height: min-content;
+    border-style: solid;
+    /* max-height: min-content; */
     border-width: thin;
     text-align: center;
+    /*
     position: sticky;
     top: 1em;
+    */
     align-self: flex-start;
     min-width: 22%;
 }
@@ -104,17 +103,17 @@ blockquote {
     font-style: italic;
     padding-left: 1.333em;
     padding-right: 0.666em;
+    margin: 0.5em;
+}
+#title {
+    font-style: italic;
+}
+.main-image img {
+    max-width: 100%;
+    height: auto;
 }
 @media only screen and (max-width: 768px) {
-    #article {
-        flex-direction: column;
-    }
-    #post {
-        order: 1;
-    }
     #toc {
-        order: 0;
-        position: relative;
         align-self: stretch;
     }
 }

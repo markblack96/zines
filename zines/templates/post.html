@@ -2,7 +2,9 @@
 {% block title %}
 {{ post.title }}
 {% endblock %}
-<link rel="stylesheet" src="{{ url_for('static', filename='post.css')}}">
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='post.css')}}">
+{% endblock %}
 {% block messages %}
 <div id="messages">
     {% with messages = get_flashed_messages() %}
@@ -15,7 +17,8 @@
 </div>
 {% endblock %}
 {% block index %}
-<div id="post" class="flex column">
+<div id="post">
+    
     {% if sections is defined and sections[0] is defined %}
     <div id="toc">
         <span>{{ post.title }}</span>
@@ -28,15 +31,13 @@
         </ul>
     </div>
     {% endif %}
-    <div id="title-and-image">
+    <div id="body">
         <h1 id="title">{{ post.title }}</h1>
         {% if post.images[0] is defined %}
         <div class="main-image">
             <img src="{{ url_for('static', filename='images/'+post.images[0].url) }}">
         </div>
         {% endif %}
-    </div>
-    <div class="body">
         {{ post.content | safe }}
     </div>
 </div>

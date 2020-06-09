@@ -95,23 +95,6 @@ nav a:visited {
 #toc ul li a {
     color: #222;
 }
-/* post */
-#post {
-    padding: 1em;
-}
-blockquote {
-    font-style: italic;
-    padding-left: 1.333em;
-    padding-right: 0.666em;
-    margin: 0.5em;
-}
-#title {
-    font-style: italic;
-}
-.main-image img {
-    max-width: 100%;
-    height: auto;
-}
 @media only screen and (max-width: 768px) {
     #toc {
         align-self: stretch;

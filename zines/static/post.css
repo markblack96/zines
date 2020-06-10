@@ -1,63 +1,51 @@
-/*
-    CSS for blog
-*/
-
-* {
-    margin: 0 auto; /* center */
+/* post */
+#post {
+    padding: 1em;
+    display: grid;
+    grid-template-rows: 1;
+    grid-template-columns: 66% auto;
 }
-h1 {
-    font-size: 1.66rem;
-    text-align: center;
-}   
-h2 {
-    text-align: center;
-    font-size: 1.33rem;
-    margin: 1em;
+#post p {
+    margin-bottom: 0.666em;
+    font-family: sans-serif;
 }
-h3 {
-    text-align: center;
-    font-size: 1.11rem;
+#post li {
+    font-family: sans-serif;
 }
-section p {
-    padding: 0.111em 0.666em;
-    line-height: 140%;
+#post p:last-child {
+    margin-bottom: 0;
 }
-section h2 { /* section headers */
-   text-align: center; 
+#body {
+    grid-row-start: 1;
 }
-#title {
-    padding: 1.5em;
-    font-style: italic;
-}
-/*
- * CSS rules for table of contents
- */
 #toc {
-    padding-left: 1em;
-    padding-right: 1em;
-    padding-bottom: 1em;
-    margin: 1em;
-    margin-top: 0;
-    border-style: dashed;
-    max-height: min-content;
-    border-width: thin;
-    text-align: center;
-    position: sticky;
+    grid-column-start: 2;
+    grid-column-end: span 1;
     top: 1em;
-}
-#toc span {
-    font-style: italic;
-    font-weight: bold;
+    margin: 1em;
+    position: sticky;
 }
 blockquote {
     font-style: italic;
     padding-left: 1.333em;
     padding-right: 0.666em;
+    margin: 0.5em;
 }
-.main-image {
-    
+#title {
+    font-style: italic;
+    margin-bottom: 0.666em;
 }
 .main-image img {
-    width: 100%;
+    max-width: 100%;
     height: auto;
+}
+@media only screen and (max-width: 768px) {
+    #toc {
+        align-self: stretch;
+        position: relative;
+    }
+    #post {
+        display: flex;
+        flex-direction: column;
+    }
 }

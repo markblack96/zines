@@ -5,24 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">
+    {% block head %}{% endblock %}
 </head>
 <body>
-    <div class="header">
-        <span class="logo"></span>
-        <h1>{{ blog_title }}</h1> 
-        <p>{{ blog_description }}</p>
-    </div>
-    <nav>
-        <a href="/">Home</a>
-        {% if not current_user.is_anonymous %}
-        <a href="/write">Write</a>
-        <a href="/admin">Admin</a>
-        <a href="/logout">Logout</a>
-        {% endif %}
-    </nav>
-    {% block messages %}{% endblock %}
-    <section id="index">
+    <div id="content" class="flex column">
+        <div class="header">
+            <span class="logo"></span>
+            <h1>{{ blog_title }}</h1> 
+            <p>{{ blog_description }}</p>
+        </div>
+        <nav>
+            <a href="/">Home</a>
+            {% if not current_user.is_anonymous %}
+            <a href="/write">Write</a>
+            <a href="/admin">Admin</a>
+            <a href="/logout">Logout</a>
+            {% endif %}
+        </nav>
+        {% block messages %}{% endblock %}
         {% block index %}{% endblock %}
-    </section>
+        <div id="footer">
+            <ul>
+                <li><a href="/">Home</a></li>
+                {% if not current_user.is_anonymous %}
+                <li><a href="/write">Write</a></li>
+                <li><a href="/admin">Admin</a></li>
+                <li><a href="/logout">Logout</a></li>
+                {% endif %}
+            </ul>
+            <p>Anti-Copyright 2020, Blog Dot Fnord Dot Foundation</p>
+        </div>
+    </div>
 </body>
 </html>

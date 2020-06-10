@@ -1,20 +1,30 @@
 {% extends 'base.html' %}
 {%block title%}{{ blog_title }}{%endblock%}
+{% block messages %}
+<div id="messages">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <span style="color: red; font-style: italic">{{ message }}</span>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}
 {% block index %}
 <div class="index">
     {% if posts %}
     {% for post in posts %}
     <div class="post-preview">
         <h3 class="post-preview-title"><a href="/post/{{ post.post_id }}">{{ post.title }}</a></h3>
-        <p>{{ post.date.date() }}
-        {{ previews[post.post_id] }}</p>
+        <p>{{ post.date.date() }} -- {{ previews[post.post_id] }} <a href="/post/{{ post.post_id }}">Continue reading...</a></p>
     </div>
     {% endfor %}
     {% else %}
     <div>
         <p>No posts to show yet...</p>
     </div>
-    {% endif %}
+    {%- endif %}
 
 </div>
 {% endblock %}

@@ -23,6 +23,8 @@ def index():
 @app.route('/post/')
 @app.route('/post/<post_id>')
 def post(post_id=None):
+    blog_title = app.config['TITLE']
+    blog_description = app.config['DESCRIPTION']
     post = models.Post.query.filter_by(post_id=post_id).first()
     soup = BeautifulSoup(post.content, 'html.parser')
     # assign section ids
@@ -32,7 +34,7 @@ def post(post_id=None):
         soup.find(['h2', 'h3'], text=tag.text).replace_with(tag)
     post_view = SimpleNamespace(**{"content":soup.div, "author":post.author, "title":post.title, "images":post.images})
     sections = [section.get_text() for section in sections]
-    return render_template('post.html', post=post_view, sections=sections)
+    return render_template('post.html', blog_title=blog_title, blog_description=blog_description, post=post_view, sections=sections)
 
 @app.route('/write/<post_id>', methods=["GET", "POST"])
 @app.route('/write', methods=["GET", "POST"])

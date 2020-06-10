@@ -7,6 +7,10 @@
 }
 #post p {
     margin-bottom: 0.666em;
+    font-family: sans-serif;
+}
+#post li {
+    font-family: sans-serif;
 }
 #post p:last-child {
     margin-bottom: 0;

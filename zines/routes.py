@@ -9,6 +9,8 @@ from lxml.html.clean import Cleaner
 from bs4 import BeautifulSoup
 from werkzeug.utils import secure_filename
 from types import SimpleNamespace
+from markdown import markdown
+
 
 @app.route('/')
 @app.route('/index')
@@ -20,7 +22,6 @@ def index():
     #{post.post_id:BeautifulSoup(post.content).get_text(" ", strip=True)[:500] + "..." for post in posts}
     return render_template("index.html", posts=posts, blog_title=blog_title, blog_description=blog_description, previews=previews)
 
-@app.route('/post/')
 @app.route('/post/<post_id>')
 def post(post_id=None):
     blog_title = app.config['TITLE']
@@ -111,14 +112,12 @@ def allowed_file(filename):
 @app.route('/upload/image', methods=['GET', 'POST'])
 @login_required
 def upload_file():
-    print(request)
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part')
             return redirect(request.url)
         file = request.files['file']
-        # if user does not select file, browser also submit an empty part without filename
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
@@ -126,8 +125,46 @@ def upload_file():
             basedir = os.path.abspath(os.path.dirname(__file__))
             filename = secure_filename(file.filename)
             file.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename))
-            flash("Something should have happened")
             return redirect(url_for('uploaded_file', filename=filename))
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
+
+@app.route('/upload/post', methods=['GET', 'POST'])
+@login_required
+def upload_post():
+    if request.method == 'POST':
+        # ensure the post request has file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            # get the markdown from the file
+            md = markdown(file.read().decode('utf-8')) # convert md from bytes to utf-8 string then convert to markdown
+            file.close()
+            # get info and save to database
+            cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li', 'pre', 'code'],
+                          remove_unknown_tags=False)
+            post = cleaner.clean_html(md)
+            soup = BeautifulSoup(post, 'html.parser')
+            title = soup.find_all('h1')[0].string # todo: check if exists first
+            for h1 in soup("h1"): # remove all h1 tags
+                h1.decompose()
+            post=soup.prettify()
+            submission = models.Post(title=title, author=current_user.username, content=post)
+            db.session.add(submission)
+            db.session.commit()
+            return redirect(url_for('index'))
     return '''
     <!doctype html>
     <title>Upload new File</title>

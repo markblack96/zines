@@ -8,9 +8,14 @@
 #post p {
     margin-bottom: 0.666em;
     font-family: sans-serif;
+    line-height: 1.618;
 }
 #post li {
     font-family: sans-serif;
+    line-height: 1.618;
+}
+#post ul {
+    line-height: 1.618;
 }
 #post p:last-child {
     margin-bottom: 0;

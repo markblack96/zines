@@ -102,6 +102,11 @@ def admin():
     posts = models.Post.query.all()
     return render_template('admin.html', posts=posts)
 
+@app.route('edit/post/hide/<post_id>')
+def hide_post():
+    # todo: edit index to only show posts which are not hidden, and /post not to show hidden posts
+    # mark post as hidden in database
+    
 
 # Functions below are functional with config set up but we need to make them upload filename (timestamp)
 # to database and associate with blog post id. Then we will need to make templates display the image if

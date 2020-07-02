@@ -12,5 +12,7 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'login'
 
+from .admin import admin
+app.register_blueprint(admin)
 
 from zines import routes

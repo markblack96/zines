@@ -13,8 +13,42 @@
 </div>
 {% endblock %}
 {% block index %}
+<div id="adminPanel">
+
+</div>
 <script>
-    // get posts with promise-based XHR
+    // get posts with fetch
+    const posts = fetch('/posts')
+        .then(response => response.json())
+        .then(data => data);
+
     // display post info with options
+    const adminPanel = {
+        posts: posts,
+        options: [
+            {label: 'Edit', link: function (post_id) {`/write/${post_id}`}, method: 'GET'},
+            {label: 'Edit', link: (post_id)=>`/hide/${post_id}`, method: 'PATCH'},
+            {label: 'Edit', link: (post_id)=>`/delete/${post_id}`, method: 'POST'},
+        ],
+        make: function() {
+            this.posts.then((data)=>{
+                let panel = document.querySelector('#adminPanel');
+                let row = (post)=>`
+                    <tr>
+                        <td>${post.title}</td>
+                        <td>${post.date}</td>
+                        
+                    </tr>
+                `;
+                let innerHtml = ``;
+                for (i = 0; i < data.length; i ++) {
+                    innerHtml += row(data[i]);
+                }
+                panel.innerHTML = `<table>` + innerHtml + `</table>`;
+            });
+        }
+    }
+
+
 </script>
 {% endblock %}

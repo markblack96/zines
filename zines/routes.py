@@ -96,7 +96,7 @@ def delete(post_id):
     flash(f'Post {post_id} deleted')
     return redirect(url_for('admin'))
 
-@app.route('/edit/post/hide/<post_id>')
+@app.route('/hide/<post_id>', methods=["PATCH"])
 def hide_post():
     # todo: edit index to only show posts which are not hidden, and /post not to show hidden posts
     # mark post as hidden in database

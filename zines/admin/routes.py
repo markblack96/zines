@@ -14,7 +14,7 @@ def get_posts():
 
 @admin.route('/admin')
 @login_required
-def admin():
+def admin_panel():
     blog_title = app.config['TITLE']
     blog_description = app.config['DESCRIPTION']
     return render_template('admin.html', blog_title=blog_title, blog_description=blog_description)

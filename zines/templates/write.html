@@ -1,55 +1,32 @@
 <head>
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<!-- link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <link href="{{ url_for('static', filename='write.css') }}"rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<link href="{{ url_for('static', filename='post.css') }}"rel="stylesheet">
 </head>
 <body>
-<div id="writer">
-<div id="editor-container">
-    <h1>{{ post.title }}</h1>
-    {{ post.content | safe }}
-</div>
+
 <!-- button id="submit" type="submit">
     Submit
 </button -->
-
-<form method="POST" class="form">
-    {{ form.delta }}
-    {{ form.submit }}
-</form>
+<div id="writer">
 </div>
-<script>
-    var toolbarOptions = [
-  ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-  ['blockquote', 'code-block'],
+</div>
+    <script>
+        const writer = document.querySelector('#writer');
+        const textContainer = document.createElement('textarea');
+        writer.appendChild(textContainer);
 
-  [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-  [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-  [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-  [{ 'direction': 'rtl' }],                         // text direction
+        const preview = document.createElement('div');
+        preview.id = 'body';
+        writer.appendChild(preview);
+        textContainer.onkeypress = (e)=>{
+            if (e.key !== "Enter") {
+                console.log(marked(e.target.value + e.key));
+                preview.innerHTML=marked(e.target.value + e.key);
+            }
+        }
 
-  [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-  [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
 
-  [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-  [{ 'font': [] }],
-  [{ 'align': [] }],
-
-  ['clean']                                         // remove formatting button
-    ];
-    var quill = new Quill('#editor-container', {
-        modules: {
-            toolbar: toolbarOptions
-        },
-        theme: 'snow'
-    });
-
-    var submit_entry = function () {
-        var hidden_text_field = document.getElementById('delta');
-        hidden_text_field.value = document.getElementById('editor-container').innerHTML;
-    }
-    var new_post_form = document.getElementsByClassName('form')[0];
-    new_post_form.onsubmit = submit_entry;
-</script>
+    </script>
 </body>

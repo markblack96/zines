@@ -13,6 +13,7 @@ class Post(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
     post_id = db.Column(db.Integer, unique=True, primary_key=True)
     images = db.relationship('Image', backref='post', lazy=True)
+    hidden = db.Column(db.Boolean, default=False)
     def __repr__(self):
         return f'<Post; title: {self.title}, id: {self.post_id}>'
 

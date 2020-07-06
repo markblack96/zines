@@ -30,49 +30,92 @@
                 label: 'Edit', 
                 link: `/write/${post.post_id}`, 
                 method: 'GET', 
-                template: function() {return `<a href="${this.link}">${this.label}</a>`}
+                make: function() {
+                    let anchor = document.createElement('a');
+                    anchor.innerText = this.label;
+                    anchor.href = this.link;
+                    return anchor;
+                }
             },
             {
-                label: 'Hide', 
+                label: 'Toggle Hide', 
                 link: `/hide/${post.post_id}`, 
                 method: 'PATCH', 
-                template: function() {
+                make: function() {
                     let btn = document.createElement('button')
                     btn.innerText = this.label;
-                    btn.onclick = function() {
-                        fetch(this.link).then(response=>console.log(response));
+                    btn.onclick = () => {
+                        fetch(this.link, {'method': 'PATCH'}).then(response=>response.json())
+                        .then(
+                            (d)=>{
+                                console.log(d);
+                                btn.parentElement.parentElement.firstChild.innerHTML = `${d.title} ${d.hidden ? '<span style="color: red">(Hidden)</span>' : ''}`;
+                                // the above code is a monstrosity and needs to be fixed with proper web components and state management eventually
+                            }
+                        );
                     }
-                    return btn.outerHTML;
+                    return btn;
+                }
+            },
+            {
+                label: 'Delete',
+                link: `/delete/${post.post_id}`,
+                method: 'DELETE',
+                make: function() {
+                    let btn = document.createElement('button');
+                    btn.innerText = this.label;
+                    btn.onclick = () => {
+                        fetch(this.link, {'method': 'DELETE'}).then(response=>response)
+                        .then((d)=>{
+                            if (d.status == 200) {
+                                alert('Post deleted.');
+                            }
+                            console.log(d);
+                        })
+                        .catch(error=>console.error('Error: '+ error))
+                    }
+                    return btn;
                 }
             }
         ],
         make: function() {
             // collect posts and display them
             var options = this.options;
+            // notify user posts are being fetched
+            const panel = document.querySelector('#adminPanel')
+            panel.innerText = 'Loading posts, please wait';
             this.posts.then((data)=>{
                 let panel = document.querySelector('#adminPanel');
-                let row = (post)=>{ 
-                    let postInfo = `<td>${post.title}</td><td>${post.date}</td>`;
-                    let optTags = ``;
-                    options(post).forEach(d=>{
-                        optTags+=`<td>${d.template()}</td>`;
-                        
-                        }
-                    );
-                    return `<tr>${postInfo}${optTags}</tr>`;
-                }
-                ;
-                let innerHtml = ``;
+                let table = document.createElement('table');
                 for (i = 0; i < data.length; i ++) {
                     let post = data[i];
-                    options(post).forEach(d=>console.log(d.template()));
-                    innerHtml += row(data[i]);
+                    let row = document.createElement('tr');
+                    let title = document.createElement('td');
+                    console.log(post.hidden);
+                    title.innerHTML = `${post.title} ${post.hidden === true ? '<span style="color: red">(Hidden)</span>' : ''}`;
+                    row.appendChild(title);
+                    options(post).forEach((d)=>{
+                        let opt = d.make();
+                        let td = document.createElement('td');
+                        td.appendChild(opt);
+                        row.appendChild(td);
+                    });
+                    table.appendChild(row);
                 }
-                panel.innerHTML = `<table>` + innerHtml + `</table>`;
-            });
-        }
-    }
+                panel.innerText = ''; // remove notification
+                return table;
+            }).then((table)=>document.querySelector('#adminPanel').appendChild(table));
 
+        /* 
+         * originally I attempted to abuse template literals to do the above. I am putting
+         * a note to myself here not to attempt to do so again.
+         */
+
+        }
+        
+    }
+    
+    adminPanel.make();
 
 </script>
 {% endblock %}

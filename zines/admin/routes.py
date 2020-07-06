@@ -6,7 +6,7 @@ from . import admin
 
 @admin.route('/posts')
 def get_posts():
-    posts = Post.query.all()
+    posts = Post.query.order_by(Post.date.desc()).all()
     posts = [dict((col, getattr(post, col)) for col in Post.__table__.columns.keys() if col != 'content') for post in posts]
     return jsonify(posts)
 

@@ -10,6 +10,7 @@ class Post(db.Model):
     title = db.Column(db.String)
     author = db.Column(db.String, db.ForeignKey('user.id'))
     content = db.Column(db.UnicodeText)
+    markdown = db.Column(db.UnicodeText)
     date = db.Column(db.DateTime, default=datetime.utcnow)
     post_id = db.Column(db.Integer, unique=True, primary_key=True)
     images = db.relationship('Image', backref='post', lazy=True)

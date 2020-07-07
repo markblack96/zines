@@ -41,29 +41,11 @@ def post(post_id=None):
 @app.route('/write', methods=["GET", "POST"])
 @login_required
 def write(post_id=None):
-    # todo: make title a separate field 
-    form = CreatePost()
-    post = None # start blank, bit of a hacky solution though
-    
-    if post_id:
-        post = models.Post.query.filter_by(post_id=post_id).first()
-    if request.method == "POST": # new post
-        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li'],
-                          remove_unknown_tags=False)
-        post = cleaner.clean_html(request.form.get('delta'))
-        soup = BeautifulSoup(post, 'html.parser')
-        title = soup.find_all('h1')[0].string # todo: check if exists first
-        for h1 in soup("h1"): # remove all h1 tags
-            h1.decompose()
-        post=soup.prettify()
-        submission = models.Post(title=title, author=current_user.username, content=post)
-        if post_id == None:
-            db.session.add(submission)
-        else:
-            post = models.Post.query.filter_by(post_id=post_id).update(dict(title=submission.title, content=submission.content))
-        db.session.commit()
-        return redirect(url_for('index'))
-    return render_template('write.html', form=form, post=post)
+    if request.method == "POST":
+        # get markdown, convert it to html, then save both
+        pass
+
+    return render_template('write.html')
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -87,20 +69,6 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.route('/delete/<post_id>', methods=["POST"])
-@login_required
-def delete(post_id):
-    # verify user is logged in and associated with post
-    models.Post.query.filter_by(post_id=post_id).delete()
-    db.session.commit()
-    flash(f'Post {post_id} deleted')
-    return redirect(url_for('admin'))
-
-@app.route('/hide/<post_id>', methods=["PATCH"])
-def hide_post():
-    # todo: edit index to only show posts which are not hidden, and /post not to show hidden posts
-    # mark post as hidden in database
-    pass
 
 # Functions below are functional with config set up but we need to make them upload filename (timestamp)
 # to database and associate with blog post id. Then we will need to make templates display the image if
@@ -159,7 +127,7 @@ def upload_post():
             title = soup.find_all('h1')[0].string # todo: check if exists first
             for h1 in soup("h1"): # remove all h1 tags
                 h1.decompose()
-            post=soup.prettify()
+            post = str(soup)
             submission = models.Post(title=title, author=current_user.username, content=post)
             db.session.add(submission)
             db.session.commit()

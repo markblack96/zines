@@ -2,23 +2,25 @@
 <!-- link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <link href="{{ url_for('static', filename='write.css') }}"rel="stylesheet">
-<link href="{{ url_for('static', filename='post.css') }}"rel="stylesheet">
 </head>
 <body>
 
 <!-- button id="submit" type="submit">
     Submit
 </button -->
-<div id="writer">
+<div id="editor">
 </div>
 </div>
     <script>
-        const writer = document.querySelector('#writer');
+        const editor = document.querySelector('#editor')
+        const writer = document.createElement('div');
+        writer.id = 'writer';
+        editor.appendChild(writer);
         const textContainer = document.createElement('textarea');
         writer.appendChild(textContainer);
 
         const preview = document.createElement('div');
-        preview.id = 'body';
+        preview.id = 'post';
         writer.appendChild(preview);
         textContainer.onkeypress = (e)=>{
             if (e.key !== "Enter") {
@@ -26,7 +28,8 @@
                 preview.innerHTML=marked(e.target.value + e.key);
             }
         }
-
-
+        const submit = document.createElement('button');
+        submit.innerText = 'Submit';
+        editor.appendChild(submit);
     </script>
 </body>

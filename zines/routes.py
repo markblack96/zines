@@ -1,6 +1,6 @@
 import os
 import time
-from flask import render_template, request, redirect, flash, url_for, send_from_directory
+from flask import render_template, request, redirect, flash, url_for, send_from_directory, jsonify
 from flask_login import login_required, current_user, login_user, logout_user
 from . import app, db
 from . import models
@@ -43,9 +43,32 @@ def post(post_id=None):
 def write(post_id=None):
     if request.method == "POST":
         # get markdown, convert it to html, then save both
-        pass
-
+        data = request.json
+        # print(data['content'])
+        md = data['content']
+        html = markdown(md)
+        # get info and save to database
+        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li', 'pre', 'code'],
+                        remove_unknown_tags=False)
+        post = cleaner.clean_html(html)
+        soup = BeautifulSoup(post, 'html.parser')
+        title = soup.find_all('h1')[0].string # todo: check if exists first
+        for h1 in soup("h1"): # remove all h1 tags
+            h1.decompose()
+        post = str(soup)
+        submission = models.Post(title=title, author=current_user.username, content=post, markdown=md)
+        db.session.add(submission)
+        db.session.commit()
+        return jsonify(dict(message="Received"))
+    elif request.method == "GET" and post_id != None:
+        # grab the md to edit
+        md = models.Post.query.filter_by(post_id=post_id).first()
     return render_template('write.html')
+
+@app.route('/md/<post_id>')
+def fetch_post(post_id):
+    md = models.Post.query.filter_by(post_id=post_id).first()
+    return jsonify(md=md.markdown)
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -106,6 +129,7 @@ def upload_file():
 @app.route('/upload/post', methods=['GET', 'POST'])
 @login_required
 def upload_post():
+    # todo: make sure to save markdown
     if request.method == 'POST':
         # ensure the post request has file part
         if 'file' not in request.files:

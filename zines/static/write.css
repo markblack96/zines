@@ -4,12 +4,12 @@
 #editor {
     display: grid;
     grid-template-columns: 100vw;
-    grid-template-rows: 90vh 10vh;
+    grid-template-rows: 5vh 95vh;
 }
 #writer {
     display: flex;
     flex-grow: 1;
-    grid-row: 1;
+    grid-row: 2;
     width: 100vw;
 }
 #writer textarea {
@@ -21,8 +21,17 @@
     margin: 0;
     padding: 0 1em;
 }
-#writer button {
-    grid-row: 2;
+#options {
+    display: flex;
+    grid-row: 1;
+    margin: 0;
+    justify-content: right;
+}
+#options button {
+    background-color: #222;
+    color: #eee;
+    border: none;
+    margin: 0;
 }
 /* styles for post preview */
 #post {

@@ -41,6 +41,13 @@ def post(post_id=None):
 @app.route('/write', methods=["GET", "POST"])
 @login_required
 def write(post_id=None):
+    # make sure there's content with proper format, fail gracefully if not
+    if request.method == "POST":
+        data = request.json
+        if data == None:
+            return jsonify(dict(message="Error: Expecting JSON in POST body"))
+        if data['content'] == None or len(data['content']) == 0:
+            return jsonify(dict(message="Error: Blank post"))
     if request.method == "POST" and post_id == None: # new post
         # get markdown, convert it to html, then save both
         data = request.json
@@ -48,10 +55,13 @@ def write(post_id=None):
         md = data['content']
         html = markdown(md)
         # get info and save to database
-        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li', 'pre', 'code'],
+        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li', 'pre', 'code', 'img'],
                         remove_unknown_tags=False)
         post = cleaner.clean_html(html)
         soup = BeautifulSoup(post, 'html.parser')
+        if len(soup.find_all('h1')) == 0:
+            # no title
+            return jsonify(dict(message="Error: Post has no title"))
         title = soup.find_all('h1')[0].string # todo: check if exists first
         for h1 in soup("h1"): # remove all h1 tags
             h1.decompose()
@@ -64,7 +74,7 @@ def write(post_id=None):
         data = request.json
         md = data['content']
         html = markdown(md)
-        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li', 'pre', 'code'],
+        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li', 'pre', 'code', 'img'],
                         remove_unknown_tags=False)
         post = cleaner.clean_html(html)
         soup = BeautifulSoup(post, 'html.parser')

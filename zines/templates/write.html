@@ -12,10 +12,16 @@
 </div>
 </div>
     <script>
-        const editor = document.querySelector('#editor')
+        const editor = document.querySelector('#editor');
+
+        const options = document.createElement('div');
+        options.id = 'options';
+        editor.appendChild(options);
+
         const writer = document.createElement('div');
         writer.id = 'writer';
         editor.appendChild(writer);
+
         const textContainer = document.createElement('textarea');
         writer.appendChild(textContainer);
 
@@ -24,10 +30,10 @@
         writer.appendChild(preview);
 
         // update preview with user interaction
-        textContainer.onkeypress = (e)=>{
+        textContainer.oninput = (e)=>{
             if (e.key !== "Enter") {
-                console.log(marked(e.target.value + e.key));
-                preview.innerHTML=marked(e.target.value + e.key);
+                console.log(marked(e.target.value));
+                preview.innerHTML=marked(e.target.value);
             }
         }
         const submit = document.createElement('button');
@@ -35,9 +41,12 @@
         submit.onclick = ()=>{
             fetch(window.location.pathname, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({content: textContainer.value})})
                 .then(response=>response.json())
-                .then(d=>console.log(d));
+                .then(d=>{
+                    console.log(d);
+                    alert(d.message);
+                });
         }
-        editor.appendChild(submit);
+        options.appendChild(submit);
 
         let path = window.location.pathname.split('/');
         if (path[path.length-1] !== "write") {

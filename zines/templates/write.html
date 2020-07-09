@@ -22,6 +22,8 @@
         const preview = document.createElement('div');
         preview.id = 'post';
         writer.appendChild(preview);
+
+        // update preview with user interaction
         textContainer.onkeypress = (e)=>{
             if (e.key !== "Enter") {
                 console.log(marked(e.target.value + e.key));
@@ -31,7 +33,7 @@
         const submit = document.createElement('button');
         submit.innerText = 'Submit';
         submit.onclick = ()=>{
-            fetch('/write', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({content: textContainer.value})})
+            fetch(window.location.pathname, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({content: textContainer.value})})
                 .then(response=>response.json())
                 .then(d=>console.log(d));
         }

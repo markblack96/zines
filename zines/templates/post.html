@@ -3,6 +3,10 @@
 {{ post.title }}
 {% endblock %}
 {% block head %}
+<meta property="og:title" content="{{ post.title }}">
+{% if post.images[0] is defined %}
+<meta property="og:image" content="{{ url_for('static', filename='images/'+post.images[0].url) }}">
+{% endif %}
 <link rel="stylesheet" href="{{ url_for('static', filename='post.css')}}">
 {% endblock %}
 {% block messages %}

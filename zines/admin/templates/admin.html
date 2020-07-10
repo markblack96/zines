@@ -38,6 +38,17 @@
                 }
             },
             {
+                label: 'Edit Header Image',
+                link: `/edit/image/${post.post_id}`,
+                method: 'GET',
+                make: function() {
+                    let anchor = document.createElement('a');
+                    anchor.innerText = this.label;
+                    anchor.href = this.link;
+                    return anchor;
+                }
+            },
+            {
                 label: 'Toggle Hide', 
                 link: `/hide/${post.post_id}`, 
                 method: 'PATCH', 

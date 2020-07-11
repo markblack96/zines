@@ -1,30 +1,48 @@
-{% extends 'post_base.html' %}
-{% block title %}{{ post.title }}{% endblock %}
-{% block content %}
-<article>
-<div class="container">
-
-{% if sections is defined and sections[0] is defined %}
-<div id="toc">
-<span>{{ post.title }}</span>
-<ul>
-{% for section in sections %}
-<li>
-    <a href={{ request.path }}#{{ loop.index }}>{{ section }}</a>
-</li>
-{% endfor %}
-</ul>
-</div>
-</div>
-{% endif %}
-<h1 id="title">{{ post.title }}</h1>
+{% extends 'base.html' %}
+{% block title %}
+{{ post.title }}
+{% endblock %}
+{% block head %}
+<meta property="og:title" content="{{ post.title }}">
 {% if post.images[0] is defined %}
-<div class="main-image">
-    <img src="{{ url_for('static', filename='images/'+post.images[0].url) }}">
-</div>
+<meta property="og:image" content="{{ url_for('static', filename='images/'+post.images[0].url) }}">
 {% endif %}
-<section class="body">
-{{ post.content | safe }}
-</section>
-</article>
+<link rel="stylesheet" href="{{ url_for('static', filename='post.css')}}">
+{% endblock %}
+{% block messages %}
+<div id="messages">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <span style="color: red; font-style: italic">{{ message }}</span>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}
+{% block index %}
+<div id="post">
+    
+    {% if sections is defined and sections[0] is defined %}
+    <div id="toc">
+        <span>{{ post.title }}</span>
+        <ul>
+            {% for section in sections %}
+            <li>
+                <a href={{ request.path }}#{{ loop.index }}>{{ section }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <div id="body">
+        <h1 id="title">{{ post.title }}</h1>
+        {% if post.images[0] is defined %}
+        <div class="main-image">
+            <img src="{{ url_for('static', filename='images/'+post.images[0].url) }}">
+        </div>
+        {% endif %}
+        {{ post.content | safe }}
+    </div>
+</div>
 {% endblock %}

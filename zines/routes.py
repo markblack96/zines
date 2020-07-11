@@ -1,6 +1,6 @@
 import os
 import time
-from flask import render_template, request, redirect, flash, url_for, send_from_directory
+from flask import render_template, request, redirect, flash, url_for, send_from_directory, jsonify
 from flask_login import login_required, current_user, login_user, logout_user
 from . import app, db
 from . import models
@@ -9,20 +9,23 @@ from lxml.html.clean import Cleaner
 from bs4 import BeautifulSoup
 from werkzeug.utils import secure_filename
 from types import SimpleNamespace
+from markdown import markdown
+
 
 @app.route('/')
 @app.route('/index')
 def index():
     blog_title = app.config['TITLE']
     blog_description = app.config['DESCRIPTION']
-    posts = models.Post.query.order_by(models.Post.date.desc()).all() 
+    posts = models.Post.query.filter(models.Post.hidden != True).order_by(models.Post.date.desc()).all() 
     previews = {post.post_id:BeautifulSoup(post.content).p.text for post in posts}
     #{post.post_id:BeautifulSoup(post.content).get_text(" ", strip=True)[:500] + "..." for post in posts}
     return render_template("index.html", posts=posts, blog_title=blog_title, blog_description=blog_description, previews=previews)
 
-@app.route('/post/')
 @app.route('/post/<post_id>')
 def post(post_id=None):
+    blog_title = app.config['TITLE']
+    blog_description = app.config['DESCRIPTION']
     post = models.Post.query.filter_by(post_id=post_id).first()
     soup = BeautifulSoup(post.content, 'html.parser')
     # assign section ids
@@ -32,35 +35,70 @@ def post(post_id=None):
         soup.find(['h2', 'h3'], text=tag.text).replace_with(tag)
     post_view = SimpleNamespace(**{"content":soup.div, "author":post.author, "title":post.title, "images":post.images})
     sections = [section.get_text() for section in sections]
-    return render_template('post.html', post=post_view, sections=sections)
+    return render_template('post.html', blog_title=blog_title, blog_description=blog_description, post=post_view, sections=sections)
 
 @app.route('/write/<post_id>', methods=["GET", "POST"])
 @app.route('/write', methods=["GET", "POST"])
 @login_required
 def write(post_id=None):
-    # todo: make title a separate field 
-    form = CreatePost()
-    post = None # start blank, bit of a hacky solution though
-    
-    if post_id:
-        post = models.Post.query.filter_by(post_id=post_id).first()
-    if request.method == "POST": # new post
-        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li'],
-                          remove_unknown_tags=False)
-        post = cleaner.clean_html(request.form.get('delta'))
+    # make sure there's content with proper format, fail gracefully if not
+    if request.method == "POST":
+        data = request.json
+        if data == None:
+            return jsonify(dict(message="Error: Expecting JSON in POST body"))
+        if data['content'] == None or len(data['content']) == 0:
+            return jsonify(dict(message="Error: Blank post"))
+    if request.method == "POST" and post_id == None: # new post
+        # get markdown, convert it to html, then save both
+        data = request.json
+        # print(data['content'])
+        md = data['content']
+        html = markdown(md)
+        # get info and save to database
+        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li', 'pre', 'code', 'img'],
+                        remove_unknown_tags=False)
+        post = cleaner.clean_html(html)
+        soup = BeautifulSoup(post, 'html.parser')
+        if len(soup.find_all('h1')) == 0:
+            # no title
+            return jsonify(dict(message="Error: Post has no title"))
+        title = soup.find_all('h1')[0].string # todo: check if exists first
+        for h1 in soup("h1"): # remove all h1 tags
+            h1.decompose()
+        post = str(soup)
+        submission = models.Post(title=title, author=current_user.username, content=post, markdown=md)
+        db.session.add(submission)
+        db.session.commit()
+        return jsonify(dict(message="Received"))
+    elif request.method == "POST" and post_id != None: # editing post
+        data = request.json
+        md = data['content']
+        html = markdown(md)
+        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li', 'pre', 'code', 'img'],
+                        remove_unknown_tags=False)
+        post = cleaner.clean_html(html)
         soup = BeautifulSoup(post, 'html.parser')
         title = soup.find_all('h1')[0].string # todo: check if exists first
         for h1 in soup("h1"): # remove all h1 tags
             h1.decompose()
-        post=soup.prettify()
-        submission = models.Post(title=title, author=current_user.username, content=post)
-        if post_id == None:
-            db.session.add(submission)
-        else:
-            post = models.Post.query.filter_by(post_id=post_id).update(dict(title=submission.title, content=submission.content))
+        post = str(soup)
+        p = models.Post.query.filter_by(post_id=post_id).first()
+        p.markdown = md
+        p.content = post
+        p.title = title
         db.session.commit()
-        return redirect(url_for('index'))
-    return render_template('write.html', form=form, post=post)
+        return jsonify(dict(message="Post updated"))
+
+    #elif request.method == "GET" and post_id != None:
+    # grab the md to edit
+    #    md = models.Post.query.filter_by(post_id=post_id).first()
+    return render_template('write.html')
+
+@app.route('/md/<post_id>')
+def fetch_post(post_id):
+    md = models.Post.query.filter_by(post_id=post_id).first()
+    
+    return jsonify(md=md.markdown)
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -84,21 +122,6 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.route('/delete/<post_id>', methods=["POST"])
-@login_required
-def delete(post_id):
-    # verify user is logged in and associated with post
-    models.Post.query.filter_by(post_id=post_id).delete()
-    db.session.commit()
-    flash(f'Post {post_id} deleted')
-    return redirect(url_for('admin'))
-
-@app.route('/admin', methods=["GET", "POST"])
-@login_required
-def admin():
-    posts = models.Post.query.all()
-    return render_template('admin.html', posts=posts)
-
 
 # Functions below are functional with config set up but we need to make them upload filename (timestamp)
 # to database and associate with blog post id. Then we will need to make templates display the image if
@@ -109,14 +132,12 @@ def allowed_file(filename):
 @app.route('/upload/image', methods=['GET', 'POST'])
 @login_required
 def upload_file():
-    print(request)
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part')
             return redirect(request.url)
         file = request.files['file']
-        # if user does not select file, browser also submit an empty part without filename
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
@@ -124,8 +145,47 @@ def upload_file():
             basedir = os.path.abspath(os.path.dirname(__file__))
             filename = secure_filename(file.filename)
             file.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename))
-            flash("Something should have happened")
             return redirect(url_for('uploaded_file', filename=filename))
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
+
+@app.route('/upload/post', methods=['GET', 'POST'])
+@login_required
+def upload_post():
+    # todo: make sure to save markdown
+    if request.method == 'POST':
+        # ensure the post request has file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            # get the markdown from the file
+            md = markdown(file.read().decode('utf-8')) # convert md from bytes to utf-8 string then convert to markdown
+            file.close()
+            # get info and save to database
+            cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li', 'pre', 'code'],
+                          remove_unknown_tags=False)
+            post = cleaner.clean_html(md)
+            soup = BeautifulSoup(post, 'html.parser')
+            title = soup.find_all('h1')[0].string # todo: check if exists first
+            for h1 in soup("h1"): # remove all h1 tags
+                h1.decompose()
+            post = str(soup)
+            submission = models.Post(title=title, author=current_user.username, content=post)
+            db.session.add(submission)
+            db.session.commit()
+            return redirect(url_for('index'))
     return '''
     <!doctype html>
     <title>Upload new File</title>

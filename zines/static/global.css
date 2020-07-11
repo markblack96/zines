@@ -1,35 +1,48 @@
 * {
-	margin: 0 auto;
-    font-family: Times New Roman, serif;
-}
-.index, .blog-details {
-    max-width: 66%;
-    background-color: #ffffff;
-}
-div.index p {
-    padding: 1em;
-}
-div.index li {
-    padding: 0.333em;
+    margin: 0;
 }
 body {
-    background-color: #f0f0f0;
+    background-color: #f9f9f9;
 }
-.header {
-    max-width: 66%;
+.flex {
     display: flex;
+}
+.column {
     flex-direction: column;
 }
-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
-a {
+.post-preview {
+    margin: 1em;
+}
+.post-preview p {
+    margin-left: 1em;
+    margin-top: 0.33em;
+    font-family: sans-serif;
+    line-height: 1.618;
+}
+.post-preview a {
     color: #0f0f0f;
 }
+#footer {
+    background-color: #222;
+    color: #999;
+    margin-top: auto;
+    padding: 1em;
+}
+#footer ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+#footer ul li a {
+    color: #eee;
+}
+/* navigation */
 nav {
-    max-width: 66%;
+    margin: 1em;
 }
 nav a {
     color: #0f0f0f;
@@ -37,14 +50,54 @@ nav a {
 nav a:visited {
     color: #0f0f0f;
 }
+/*
 .post-preview-title {
     padding-top: 0.33em;
     padding-left: 0.33em;
     font-style: italic;
 }
+*/
 .logo {
     background: url(images/typewriter.svg);
     background-size: 100px 100px;
     width: 100px;
     height: 100px;
+}
+#content {
+    height: 100vh;
+}
+/* table of contents */
+#toc {
+    padding: 1em;
+    margin-top: 0;
+    border-style: solid;
+    /* max-height: min-content; */
+    border-width: thin;
+    text-align: center;
+    /*
+    position: sticky;
+    top: 1em;
+    */
+    align-self: flex-start;
+    min-width: 22%;
+}
+#toc span {
+    font-style: italic;
+    font-weight: bold;
+    font-size: 1.5em;
+}
+#toc ul {
+    list-style-type: none;
+    padding: 0;
+}
+#toc ul li {
+    padding: 0.5em;
+}
+#toc ul li a {
+    color: #222;
+}
+@media only screen and (max-width: 768px) {
+    #toc {
+        align-self: stretch;
+    }
 }

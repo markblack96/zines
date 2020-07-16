@@ -1,6 +1,6 @@
 from flask import jsonify, render_template
 from zines import app, db
-from zines.models import Post
+from zines.models import Post, Image
 from flask_login import login_required
 from . import admin
 
@@ -10,6 +10,13 @@ def get_posts():
     posts = Post.query.order_by(Post.date.desc()).all()
     posts = [dict((col, getattr(post, col)) for col in Post.__table__.columns.keys() if col != 'content') for post in posts]
     return jsonify(posts)
+
+@app.route('/images')
+@login_required # don't make it easy to snoop
+def get_images():
+    images = Image.query.all()
+    images = [dict((col, getattr(image, col)) for col in Image.__table__.columns.keys()) for image in images]
+    return jsonify(images)
 
 @admin.route('/admin')
 @login_required

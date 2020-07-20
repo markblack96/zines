@@ -45,3 +45,12 @@ def delete(post_id):
     return jsonify(
         dict(message=f"Post {post_id} deleted")
     )
+
+@app.route('/images/<image_id>/delete', methods=['DELETE'])
+@login_required
+def delete_image(image_id):
+    Image.query.filter_by(id=image_id).delete()
+    db.session.commit()
+    return jsonify(
+        dict(message=f"Image {image_id} deleted")
+    )

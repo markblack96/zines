@@ -2,6 +2,7 @@
 {% extends 'base.html' %}
 {% block head %}
 <link rel="stylesheet" href="{{url_for('static', filename='admin.css')}}">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 {% endblock %}
 {% block messages %}
 <!-- displays flashed messages -->
@@ -21,6 +22,7 @@
 
 <script src="{{url_for('static', filename='imageManager.js')}}"></script>
 <script src="{{url_for('static', filename='postManager.js')}}"></script>
+<script src="{{url_for('static', filename='uploadManager.js')}}"></script>
 <script>
     // postPanel.make();
 
@@ -48,6 +50,7 @@
     }
     adminPanel.panels.push(postManager);
     adminPanel.panels.push(imageManager);
+    adminPanel.panels.push(uploadManager);
     let admin = document.querySelector('#admin');
     adminPanel.make(admin);
 </script>

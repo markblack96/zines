@@ -11,7 +11,7 @@ const imageManager = {
                 let button = document.createElement('button');
                 button.innerText = this.label;
                 button.onclick = () => {
-                    fetch(this.link, {'method': this.method})
+                    fetch(this.link, {'method': this.method, headers: {'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content}})
                         .then(d=>d.json())
                         .then(this.parent.remove())
                         .then(d=>alert(d.message));
@@ -33,6 +33,11 @@ const imageManager = {
                 thumbnail.style.maxWidth = '100px';
                 thumbNailCell.appendChild(thumbnail);
                 row.appendChild(thumbNailCell);
+                let label = document.createElement('span');
+                label.innerText = data[i].url;
+                row.appendChild(label);
+                row.style.display = 'flex';
+                row.style.alignItems = 'center';
                 this.options(data[i], row).forEach((d)=>{
                     let opt = d.make();
                     let td = document.createElement('td');

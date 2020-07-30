@@ -132,7 +132,6 @@ def allowed_file(filename):
 @login_required
 def upload_image_file():
     # check if the post request has the file part
-    print(request)
     if 'file' not in request.files:
         message = dict(message='No file part')
         return jsonify(message)
@@ -142,10 +141,42 @@ def upload_image_file():
         return jsonify(message)
     if file and allowed_file(file.filename):
         basedir = os.path.abspath(os.path.dirname(__file__))
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename))
+        file_type = os.path.splitext(file.filename)[1]
+        filename = str(time.time())[:16].replace('.', '') 
+        file.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename+file_type))
+        file_record = models.Image(id=int(filename), url=filename+file_type)
+        db.session.add(file_record)
+        db.session.commit()
         message = dict(message="Successfully uploaded image", url=url_for('uploaded_file', filename=filename))
         return jsonify(message)
+
+@app.route('/upload/md', methods=['POST'])
+@login_required
+def upload_md_file():
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    if file and allowed_file(file.filename): # todo: put the below in its own function so as not to repeat myself
+        # get the markdown from the file
+        md = markdown(file.read().decode('utf-8')) # convert md from bytes to utf-8 string then convert to markdown
+        file.close()
+        # get info and save to database
+        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li', 'pre', 'code'],
+                        remove_unknown_tags=False)
+        post = cleaner.clean_html(md)
+        soup = BeautifulSoup(post, 'html.parser')
+        title = soup.find_all('h1')[0].string # todo: check if exists first
+        for h1 in soup("h1"): # remove all h1 tags
+            h1.decompose()
+        post = str(soup)
+        submission = models.Post(title=title, author=current_user.username, content=post)
+        db.session.add(submission)
+        db.session.commit()
+        return redirect(url_for('index'))
 
 @app.route('/upload/post', methods=['GET', 'POST'])
 @login_required

@@ -35,7 +35,7 @@ const postManager = {
                 let btn = document.createElement('button')
                 btn.innerText = this.label;
                 btn.onclick = () => {
-                    fetch(this.link, {'method': 'PATCH'}).then(response=>response.json())
+                    fetch(this.link, {'method': 'PATCH', headers: {'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content}}).then(response=>response.json())
                     .then(
                         (d)=>{
                             console.log(d);
@@ -55,7 +55,7 @@ const postManager = {
                 let btn = document.createElement('button');
                 btn.innerText = this.label;
                 btn.onclick = () => {
-                    fetch(this.link, {'method': 'DELETE'}).then(response=>response)
+                    fetch(this.link, {'method': 'DELETE', headers: {'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content}}).then(response=>response)
                     .then((d)=>{
                         if (d.status == 200) {
                             alert('Post deleted.');

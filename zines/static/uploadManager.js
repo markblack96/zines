@@ -26,8 +26,8 @@ const uploadManager = {
                 fetch(o.link, 
                     {  
                         'method': 'POST',
-                        'body': file,
-                        headers: {'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content}
+                        'body': data,
+                        headers: {'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content}
                     }
                 )
                 .then(d=>d.json())

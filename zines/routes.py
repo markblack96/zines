@@ -11,7 +11,6 @@ from werkzeug.utils import secure_filename
 from types import SimpleNamespace
 from markdown import markdown
 
-
 @app.route('/')
 @app.route('/index')
 def index():
@@ -129,32 +128,24 @@ def logout():
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-@app.route('/upload/image', methods=['GET', 'POST'])
+@app.route('/upload/image', methods=['POST'])
 @login_required
-def upload_file():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            basedir = os.path.abspath(os.path.dirname(__file__))
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file', filename=filename))
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+def upload_image_file():
+    # check if the post request has the file part
+    print(request)
+    if 'file' not in request.files:
+        message = dict(message='No file part')
+        return jsonify(message)
+    file = request.files['file']
+    if file.filename == '':
+        message = dict(message='No selected file')
+        return jsonify(message)
+    if file and allowed_file(file.filename):
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename))
+        message = dict(message="Successfully uploaded image", url=url_for('uploaded_file', filename=filename))
+        return jsonify(message)
 
 @app.route('/upload/post', methods=['GET', 'POST'])
 @login_required

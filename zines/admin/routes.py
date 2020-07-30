@@ -1,4 +1,4 @@
-from flask import jsonify, render_template
+from flask import jsonify, render_template, request
 from zines import app, db
 from zines.models import Post, Image
 from flask_login import login_required

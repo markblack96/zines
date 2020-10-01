@@ -20,6 +20,9 @@
 #post p:last-child {
     margin-bottom: 0;
 }
+#post p img {
+    max-width: 100%;
+}
 #body {
     grid-row-start: 1;
 }

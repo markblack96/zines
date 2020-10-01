@@ -11,7 +11,6 @@ from werkzeug.utils import secure_filename
 from types import SimpleNamespace
 from markdown import markdown
 
-
 @app.route('/')
 @app.route('/index')
 def index():
@@ -129,32 +128,55 @@ def logout():
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-@app.route('/upload/image', methods=['GET', 'POST'])
+@app.route('/upload/image', methods=['POST'])
 @login_required
-def upload_file():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            basedir = os.path.abspath(os.path.dirname(__file__))
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file', filename=filename))
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+def upload_image_file():
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        message = dict(message='No file part')
+        return jsonify(message)
+    file = request.files['file']
+    if file.filename == '':
+        message = dict(message='No selected file')
+        return jsonify(message)
+    if file and allowed_file(file.filename):
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        file_type = os.path.splitext(file.filename)[1]
+        filename = str(time.time())[:16].replace('.', '') 
+        file.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename+file_type))
+        file_record = models.Image(id=int(filename), url=filename+file_type)
+        db.session.add(file_record)
+        db.session.commit()
+        message = dict(message="Successfully uploaded image", url=url_for('uploaded_file', filename=filename))
+        return jsonify(message)
+
+@app.route('/upload/md', methods=['POST'])
+@login_required
+def upload_md_file():
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    if file and allowed_file(file.filename): # todo: put the below in its own function so as not to repeat myself
+        # get the markdown from the file
+        md = markdown(file.read().decode('utf-8')) # convert md from bytes to utf-8 string then convert to markdown
+        file.close()
+        # get info and save to database
+        cleaner = Cleaner(allow_tags=['p', 'h1', 'h2', 'h3', 'a', 'blockquote', 'ul', 'ol', 'li', 'pre', 'code'],
+                        remove_unknown_tags=False)
+        post = cleaner.clean_html(md)
+        soup = BeautifulSoup(post, 'html.parser')
+        title = soup.find_all('h1')[0].string # todo: check if exists first
+        for h1 in soup("h1"): # remove all h1 tags
+            h1.decompose()
+        post = str(soup)
+        submission = models.Post(title=title, author=current_user.username, content=post)
+        db.session.add(submission)
+        db.session.commit()
+        return redirect(url_for('index'))
 
 @app.route('/upload/post', methods=['GET', 'POST'])
 @login_required

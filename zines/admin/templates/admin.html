@@ -1,0 +1,57 @@
+<!-- Admin page -->
+{% extends 'base.html' %}
+{% block head %}
+<link rel="stylesheet" href="{{url_for('static', filename='admin.css')}}">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+{% endblock %}
+{% block messages %}
+<!-- displays flashed messages -->
+<div id="messages">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <span style="color: red; font-style: italic">{{ message }}</span>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}
+{% block index %}
+<div id="admin">
+</div>
+
+<script src="{{url_for('static', filename='imageManager.js')}}"></script>
+<script src="{{url_for('static', filename='postManager.js')}}"></script>
+<script src="{{url_for('static', filename='uploadManager.js')}}"></script>
+<script>
+    // postPanel.make();
+
+    const adminPanel = {
+        panels: [],
+        make: function(element) {
+            var tabs = document.createElement('ul');
+            tabs.id = 'tabs';
+            this.panels.forEach((panel)=>{
+                let tab = document.createElement('li');
+                tab.onclick = () => {
+                    this.panels.forEach((p)=>document.querySelector('div#'+p.label).hidden = true);
+                    document.querySelector('div#'+panel.label).hidden = false;
+                }
+                tab.innerText = panel.label;
+                tabs.appendChild(tab);
+                let panelContainer = document.createElement('div');
+                panelContainer.hidden = true;
+                panelContainer.id = panel.label;
+                panel.make(panelContainer)
+                element.appendChild(panelContainer);
+            });
+            element.insertBefore(tabs, element.firstChild);
+        }
+    }
+    adminPanel.panels.push(postManager);
+    adminPanel.panels.push(imageManager);
+    adminPanel.panels.push(uploadManager);
+    let admin = document.querySelector('#admin');
+    adminPanel.make(admin);
+</script>
+{% endblock %}

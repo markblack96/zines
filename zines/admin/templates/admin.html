@@ -17,8 +17,22 @@
 </div>
 {% endblock %}
 {% block index %}
+
+<template id="posts-panel">
+    <div id="posts-panel">
+        <slot class="posts-list">
+            <span class="fallback-text">No posts to show...</span>
+        </slot>
+    </div>
+</template>
+
 <div id="admin">
 </div>
+<script src="{{url_for('static', filename='DeleteButton.js')}}"></script>
+<script src="{{url_for('static', filename='PostsPanel.js')}}"></script>
+<posts-panel>
+
+</posts-panel>
 
 <script src="{{url_for('static', filename='imageManager.js')}}"></script>
 <script src="{{url_for('static', filename='postManager.js')}}"></script>

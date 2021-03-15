@@ -1,3 +1,5 @@
+import FetchEnabledButton from './DeleteButton.js'
+import EventBus from './EventBus.js'
 
 class PostsPanel extends HTMLElement {
     constructor() {
@@ -7,6 +9,15 @@ class PostsPanel extends HTMLElement {
         const shadowRoot = this.attachShadow({mode: 'open'}).appendChild(content.cloneNode(true));
 
         this._posts = [];
+        console.log("this", this)
+        
+        EventBus.register('fetch-button-clicked', async (e)=>{
+            console.log('click')
+            await this._getPosts()
+                .then(posts=>{
+                    this.posts = posts;
+                })
+        })
     }
     static get observedAttributes() {
         return ['posts']
@@ -14,13 +25,14 @@ class PostsPanel extends HTMLElement {
     attributeChangedCallback(name, oldValue, newValue) {
         console.log("newValue", newValue);
     }
-    connectedCallback() {
-        fetch('/posts')
+    async _getPosts() {
+        return await fetch('/posts')
             .then(resp=>resp.json())
-            .then(data=>{
-                console.log("Data from connectedCallback()", data);
-                this.posts = data;
-                // this.setAttribute('posts', data)
+    }
+    connectedCallback() {
+        this._getPosts()
+            .then(posts=>{
+                this.posts = posts
             })
     }
     get posts() {
@@ -32,15 +44,16 @@ class PostsPanel extends HTMLElement {
     }
     render() {
         console.log("Posts from render()", this.posts)
+        this.shadowRoot.querySelector('#posts-panel').innerHTML = '';
         let postDivs = this.posts.map(post=>{
             let container = document.createElement('div');
             let titleSpan = document.createElement('span');
             titleSpan.innerText = `${post.title}`;
-            let deleteButton = new FetchEnabledButton();
+            let deleteButton = new FetchEnabledButton(`/delete/${post.post_id}`, {method: 'DELETE', headers: {'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content}});
 
             container.appendChild(titleSpan);
             container.appendChild(deleteButton);            
-            this.shadowRoot.appendChild(container);
+            this.shadowRoot.querySelector('#posts-panel').appendChild(container);
         })
         return postDivs
     }

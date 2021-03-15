@@ -2,8 +2,9 @@
  * A custom button element that takes a URL and 
  * @params url
  */
+import EventBus from "./EventBus.js";
 
- class FetchEnabledButton extends HTMLButtonElement {
+ export default class FetchEnabledButton extends HTMLButtonElement {
     constructor(url, options) {
         super()
         this._url = url
@@ -17,7 +18,6 @@
         console.log("newValue", newValue);
     }
     connectedCallback() {
-        this.url = '/some-endpoint'
         this.onclick = this.onClick;
     }
     get url() {
@@ -31,7 +31,8 @@
         console.log(this.url)
         fetch(this.url, this._options)
             .then(resp=>resp.json())
-            .then(console.log)
+            .then(data=>alert(data['message']))
+            .then(()=>EventBus.fire('fetch-button-clicked'))
             .catch(err=>console.log(err))
 
     }
